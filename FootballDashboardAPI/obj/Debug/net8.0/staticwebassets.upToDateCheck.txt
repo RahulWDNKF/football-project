@@ -1,0 +1,4 @@
+wwwroot\player-images\player-2.jfif
+wwwroot\player-images\player-1.jfif
+wwwroot\player-images\player-3.jfif
+wwwroot\player-images\player-3.jpg
