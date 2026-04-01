@@ -11,6 +11,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
 
+# ✅ IMPORTANT: bind to Render port
+ENV ASPNETCORE_URLS=http://+:${PORT}
+
 EXPOSE 10000
 
 ENTRYPOINT ["dotnet", "FootballDashboardAPI.dll"]

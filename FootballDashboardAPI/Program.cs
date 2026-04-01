@@ -11,6 +11,13 @@ using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ✅ IMPORTANT: Use Render PORT
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+app.Run();
+
 // Add services to the container.
 
 //builder.Services.AddControllers();
@@ -138,6 +145,10 @@ builder.Services.AddScoped<IEmailNotificationService, EmailNotificationService>(
 builder.Services.AddHostedService<NotificationBackgroundService>();
 
 var app = builder.Build();
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+
+app.Urls.Add($"http://0.0.0.0:{port}")
 
 await IdentitySeedService.SeedAsync(app.Services, app.Configuration);
 
