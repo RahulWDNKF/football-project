@@ -33,4 +33,4 @@ publish/
 /FootballDashboardAPI/obj/FootballDashboardAPI.csproj.nuget.g.props
 /FootballDashboardAPI/obj/project.assets.json
 /FootballDashboardAPI/obj/project.nuget.cache
-/FootballDashboardAPI/appsettings.json
+FootballDashboardAPI/appsettings.json
