@@ -11,13 +11,6 @@ using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ IMPORTANT: Use Render PORT
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-
-app.Urls.Add($"http://0.0.0.0:{port}");
-
-app.Run();
-
 // Add services to the container.
 
 //builder.Services.AddControllers();
@@ -27,25 +20,25 @@ builder.Services.AddControllers()
         options.SuppressModelStateInvalidFilter = true; // ADD THIS
     });
 
-// Database Connection
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-if (string.IsNullOrEmpty(connectionString))
-{
-    throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
-}
+//// Database Connection
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+//if (string.IsNullOrEmpty(connectionString))
+//{
+//    throw new InvalidOperationException("Connection string 'DefaultConnection' not found in appsettings.json");
+//}
 
-builder.Services.AddDbContext<FootballContext>(options =>
-    options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<FootballContext>(options =>
+//    options.UseSqlServer(connectionString));
 
 // ---------- PostgreSQL ----------
 
 var postgresConnectionString =
-    builder.Configuration.GetConnectionString("PostgresConnection");
+    builder.Configuration.GetConnectionString("DefaultConnection");
 
 if (string.IsNullOrEmpty(postgresConnectionString))
 {
     throw new InvalidOperationException(
-        "Connection string 'PostgresConnection' not found"
+        "Connection string 'DefaultConnection' not found"
     );
 }
 
@@ -101,15 +94,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins(
-            "http://localhost:3000",  "https://localhost:3000",
-            "http://localhost:5173",  "https://localhost:5173",
-            "http://localhost:8080",  "https://localhost:8080"
-        )
+        policy.AllowAnyOrigin()
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials()
-              .WithExposedHeaders("Authorization");
+              .AllowAnyMethod();
     });
 });
 
@@ -145,10 +132,6 @@ builder.Services.AddScoped<IEmailNotificationService, EmailNotificationService>(
 builder.Services.AddHostedService<NotificationBackgroundService>();
 
 var app = builder.Build();
-
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-
-app.Urls.Add($"http://0.0.0.0:{port}")
 
 await IdentitySeedService.SeedAsync(app.Services, app.Configuration);
 
