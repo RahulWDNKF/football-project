@@ -1,25 +1,30 @@
 # -------- BUILD STAGE --------
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM ://microsoft.com AS build
 WORKDIR /src
 
-# Copy csproj and restore
-COPY *.csproj ./
-RUN dotnet restore
+# 1. Copy the project file from the subfolder to the build container
+COPY ["FootballDashboardAPI/FootballDashboardAPI.csproj", "FootballDashboardAPI/"]
 
-# Copy everything else and publish
-COPY . ./
-RUN dotnet publish -c Release -o /app/out
+# 2. Restore dependencies
+RUN dotnet restore "FootballDashboardAPI/FootballDashboardAPI.csproj"
+
+# 3. Copy the entire repository and move into the project folder
+COPY . .
+WORKDIR "/src/FootballDashboardAPI"
+
+# 4. Build and publish the release
+RUN dotnet publish "FootballDashboardAPI.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # -------- RUNTIME STAGE --------
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM ://microsoft.com AS final
 WORKDIR /app
 
-# Copy published files
-COPY --from=build /app/out .
+# 5. Copy the published output from the build stage
+COPY --from=build /app/publish .
 
-# Render uses dynamic PORT (important)
-ENV ASPNETCORE_URLS=http://+:10000
-EXPOSE 10000
+# 6. Configure for Render (ASP.NET 8.0 uses 8080 by default)
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
 
-# Start app
+# 7. Start the application
 ENTRYPOINT ["dotnet", "FootballDashboardAPI.dll"]
